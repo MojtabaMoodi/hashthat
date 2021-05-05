@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver import FirefoxOptions
 from .forms import HashForm
 from .models import Hash
+from django.core.exceptions import ValidationError
 
 
 class FunctionalTestCase(TestCase):
@@ -59,3 +60,10 @@ class UnitTestCase(TestCase):
     hash = self.saveHash()
     response = self.client.get('/hash/2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824')
     self.assertContains(response, 'hello')
+
+  def test_bad_data(self):
+    def badHash():
+      hash = Hash()
+      hash.hash = 'lsaflkjsafl;uolijawrtelkjasrtflkjasrflisafljasflkjaserliujaewroiuasertlkjsaflkjsaerflkjaserfolijwq4rtoijuasrtflkjasrflj'
+      hash.full_clean()
+    self.assertRaises(ValidationError, badHash)
